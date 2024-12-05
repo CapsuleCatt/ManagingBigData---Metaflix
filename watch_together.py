@@ -51,29 +51,19 @@ def watch_together_page():
         # assume user_id is 1 for demo
         room_id = movie_id
         user_id = 1
-
-        def fetch_friends():
-            user_friends = friends_collection.find_one({"UserID": user_id})
-            return user_friends.get("Friends", []) if user_friends else []
-
-        friends_list = fetch_friends()
-
         st.session_state.chat_history = []
 
         # fetch chat messages
         def fetch_chat_messages():
-            if not friends_list:
-                return []
-            placeholders = ", ".join(["%s"] * len(friends_list))
             query = f"""
             SELECT all_authors, messages, time 
             FROM chat_temp 
-            WHERE show_id = %s AND user_id IN ({placeholders})
+            WHERE show_id = %s AND user_id
             ORDER BY time ASC
             """
             try:
                 with conn.cursor() as cursor:
-                    cursor.execute(query, [room_id] + friends_list)
+                    cursor.execute(query, [room_id])
                     results = cursor.fetchall()
                     # Store messages in session_state
                     st.session_state.chat_history = [
