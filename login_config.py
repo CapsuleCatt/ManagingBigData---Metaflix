@@ -1,6 +1,5 @@
 import streamlit as st
 # from sql_data_base import inquire_mysql,execute_mysql
-import json
 """
 Login to Netflix
 """

@@ -2,7 +2,6 @@ import streamlit as st
 import pymysql
 from datetime import datetime
 from pymongo import MongoClient
-import uuid
 
 
 def display_movies_grid(movies):
@@ -103,7 +102,7 @@ def watch_together_page():
         with col1:
             # Video Section
             st.subheader(movie_selected)
-            st.video("friendsS01E01.mkv")
+            st.video("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
 
         with col2:
             # Chat Section
