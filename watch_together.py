@@ -1,6 +1,7 @@
 import streamlit as st
 import pymysql
 from datetime import datetime
+import uuid
 from pymongo import MongoClient
 
 
@@ -13,7 +14,6 @@ def display_movies_grid(movies):
     for i in range(0, len(movies), movies_per_row):
         cols = st.columns(movies_per_row)
         for col, movie in zip(cols, movies[i:i + movies_per_row]):
-            # Display movie poster and title
             with col:
                 st.image(dummy_image_path, use_container_width=True)
                 if st.button(f"{movie['title']} ({movie['release_year']})"):
@@ -33,17 +33,17 @@ def watch_together_page():
             movie_selected = f"{movie['title']} ({movie['release_year']})"
         st.title("Watch Together with Friends")
         # rds
-        # db_host = "netflix-database.cps2kq4uy10a.us-east-1.rds.amazonaws.com"
-        # db_user = "admin"
-        # db_password = "netflix-database"
-        # db_name = "Netflix"
+        db_host = "netflix-database.cps2kq4uy10a.us-east-1.rds.amazonaws.com"
+        db_user = "admin"
+        db_password = "netflix-database"
+        db_name = "Netflix"
 
-        # conn = pymysql.connect(
-        #     host=db_host,
-        #     user=db_user,
-        #     password=db_password,
-        #     database=db_name
-        # )
+        conn = pymysql.connect(
+            host=db_host,
+            user=db_user,
+            password=db_password,
+            database=db_name
+        )
 
         # friends
         friends_collection = db['Friends']
@@ -60,34 +60,34 @@ def watch_together_page():
 
         st.session_state.chat_history = []
 
-        # fetch chat messages (dummy data for demo)
+        # fetch chat messages
         def fetch_chat_messages():
-            # if not friends_list:
-            #     return []
-            # placeholders = ", ".join(["%s"] * len(friends_list))
-            # query = f"""
-            # SELECT all_authors, messages, time 
-            # FROM chats 
-            # WHERE show_id = %s AND user_id IN ({placeholders})
-            # ORDER BY time ASC
-            # """
-            # try:
-            #     with conn.cursor() as cursor:
-            #         cursor.execute(query, [room_id] + friends_list)
-            #         results = cursor.fetchall()
-            #         # Store messages in session_state
-            #         st.session_state.chat_history = [
-            #             {"author": row[0], "message": row[1], "timestamp": row[2]} for row in results
-            #         ]
-            # except Exception as e:
-            #     st.error(f"Failed to fetch chat messages: {e}")
+            if not friends_list:
+                return []
+            placeholders = ", ".join(["%s"] * len(friends_list))
+            query = f"""
+            SELECT all_authors, messages, time 
+            FROM chat_temp 
+            WHERE show_id = %s AND user_id IN ({placeholders})
+            ORDER BY time ASC
+            """
+            try:
+                with conn.cursor() as cursor:
+                    cursor.execute(query, [room_id] + friends_list)
+                    results = cursor.fetchall()
+                    # Store messages in session_state
+                    st.session_state.chat_history = [
+                        {"author": row[0], "message": row[1], "timestamp": row[2]} for row in results
+                    ]
+            except Exception as e:
+                st.error(f"Failed to fetch chat messages: {e}")
             # make dummy chat messages for demo
-            st.session_state.chat_history = [
-                {"author": "User1", "message": "Hello!", "timestamp": "2021-10-01 12:00:00"},
-                {"author": "User2", "message": "Hi there!", "timestamp": "2021-10-01 12:01:00"},
-                {"author": "User1", "message": "How are you?", "timestamp": "2021-10-01 12:02:00"},
-                {"author": "User2", "message": "I'm good, thanks!", "timestamp": "2021-10-01 12:03:00"},
-            ]
+            # st.session_state.chat_history = [
+            #     {"author": "User1", "message": "Hello!", "timestamp": "2021-10-01 12:00:00"},
+            #     {"author": "User2", "message": "Hi there!", "timestamp": "2021-10-01 12:01:00"},
+            #     {"author": "User1", "message": "How are you?", "timestamp": "2021-10-01 12:02:00"},
+            #     {"author": "User2", "message": "I'm good, thanks!", "timestamp": "2021-10-01 12:03:00"},
+            # ]
             
 
         if not st.session_state.chat_history:
@@ -117,22 +117,21 @@ def watch_together_page():
                         # display only the latest message
                         if chat == st.session_state.chat_history[-1]:
                             st.write(f"[{chat['timestamp']}] **{chat['author']}**: {chat['message']}")
-                # # backend operation to store the message in RDS
-                
-                # unique_id = str(uuid.uuid4())[:8]
-                # insert_query = """
-                # INSERT INTO chats (unique_id, messages, all_authors, timestamps, show_id, time, user_id) 
-                # VALUES (%s, %s, %s, %s, %s, %s, %s)
-                # """
-                # try:
-                #     with conn.cursor() as cursor:
-                #         cursor.execute(insert_query, (
-                #             unique_id, prompt, "You", "-1:00", room_id, timestamp, user_id
-                #         ))
-                #         conn.commit()
-                #     st.rerun()
-                # except Exception as e:
-                #     st.error(f"An error occurred while sending the message: {e}")
+                # backend operation to store the message in RDS
+                unique_id = str(uuid.uuid4())[:8]
+                insert_query = """
+                INSERT INTO chat_temp (unique_id, messages, all_authors, timestamps, show_id, time, user_id) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                """
+                try:
+                    with conn.cursor() as cursor:
+                        cursor.execute(insert_query, (
+                            unique_id, prompt, "You", "-1:00", room_id, timestamp, user_id
+                        ))
+                        conn.commit()
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"An error occurred while sending the message: {e}")
         if st.button("Back to Movie Selection"):
             st.session_state["selected_movie"] = None  # Reset selected movie
 
