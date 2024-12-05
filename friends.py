@@ -31,19 +31,17 @@ def load_friend_page():
     new_friend_id = st.number_input("Enter Friend ID", min_value=0, step=1)
     if st.button("Add Friend"):
         if not user_friends:
-            # If user doesn't exist, create the entry
             friends_collection.insert_one({"UserID": user_id, "Friends": [new_friend_id]})
         else:
-            # Add to existing user's friends list
+            # add to existing friends list
             friends_collection.update_one({"UserID": user_id}, {"$addToSet": {"Friends": new_friend_id}})
         st.success(f"Friend {new_friend_id} added!")
-        st.experimental_rerun()  # Refresh the page to update the friends list
+        st.rerun()  # refresh
 
-    # Remove a friend
     st.subheader("Remove a Friend")
     if friends_list:
         friend_to_remove = st.selectbox("Select Friend to Remove", options=friends_list)
         if st.button("Remove Friend"):
             friends_collection.update_one({"UserID": user_id}, {"$pull": {"Friends": friend_to_remove}})
             st.success(f"Friend {friend_to_remove} removed!")
-            st.experimental_rerun()  # Refresh the page to update the friends list
+            st.rerun() # refresh
