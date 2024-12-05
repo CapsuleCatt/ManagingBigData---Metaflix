@@ -23,19 +23,16 @@ if st.session_state [ 'user_info' ]:
     elif selected == 'Friends':
         try:
             load_friend_page()
-            pass
         except:
             pass
     elif selected == 'Watch Together':
         try:
             load_watch_together()
-            pass
         except:
             pass
     elif selected == 'Account':
         try:
             load_account_page()
-            pass
         except:
             pass
     
