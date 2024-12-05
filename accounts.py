@@ -9,10 +9,10 @@ def change_date(str):
 def load_account_page():
     st.title("Your Account Information")
     # rds
-    db_host = "netflix-database.cps2kq4uy10a.us-east-1.rds.amazonaws.com"
-    db_user = "admin"
-    db_password = "netflix-database"
-    db_name = "Netflix"
+    db_host = st.secrets["rds"]["db_host"]
+    db_user = st.secrets["rds"]["db_user"]
+    db_password = st.secrets["rds"]["db_password"]
+    db_name = st.secrets["rds"]["db_name"]
 
     conn = pymysql.connect(
         host=db_host,

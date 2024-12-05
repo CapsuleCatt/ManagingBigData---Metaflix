@@ -24,19 +24,20 @@ def display_movies_grid(movies):
 def watch_together_page():
     movie_id = st.session_state.get('selected_movie', None)
     if movie_id:
-        connection_string = "mongodb+srv://aimeechen:8VoCX6UhInGoJpOs@bigdata.4bgpg.mongodb.net/"
+        connection_string = st.secrets["mongodb"]["connection_string"]
+        db_name = st.secrets["mongodb"]["database_name"]
         client = MongoClient(connection_string)
-        db = client['StreamingPlatform']
+        db = client[db_name]
         movies_collection = db['Movies']
         movie = movies_collection.find_one({"_id": movie_id})
         if movie:
             movie_selected = f"{movie['title']} ({movie['release_year']})"
         st.title("Watch Together with Friends")
         # rds
-        db_host = "netflix-database.cps2kq4uy10a.us-east-1.rds.amazonaws.com"
-        db_user = "admin"
-        db_password = "netflix-database"
-        db_name = "Netflix"
+        db_host = st.secrets["rds"]["db_host"]
+        db_user = st.secrets["rds"]["db_user"]
+        db_password = st.secrets["rds"]["db_password"]
+        db_name = st.secrets["rds"]["db_name"]
 
         conn = pymysql.connect(
             host=db_host,
@@ -44,9 +45,6 @@ def watch_together_page():
             password=db_password,
             database=db_name
         )
-
-        # friends
-        friends_collection = db['Friends']
 
         # assume user_id is 1 for demo
         room_id = movie_id
@@ -126,9 +124,10 @@ def watch_together_page():
 
 
 def load_watch_together():
-    connection_string = "mongodb+srv://aimeechen:8VoCX6UhInGoJpOs@bigdata.4bgpg.mongodb.net/"
+    connection_string = st.secrets["mongodb"]["connection_string"]
+    db_name = st.secrets["mongodb"]["database_name"]
     client = MongoClient(connection_string)
-    db = client['StreamingPlatform']
+    db = client[db_name]
     movies_collection = db['Movies']
 
     movies = list(movies_collection.find({}, {"_id": 1, "title": 1, "release_year": 1, "genre": 1}).limit(20))  # Limit to 20 movies for demo

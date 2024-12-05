@@ -23,9 +23,10 @@ def display_movies_grid(movies):
 def display_movie_details():
     movie_id = st.session_state.get('selected_movie', None)
     if movie_id:
-        connection_string = "mongodb+srv://aimeechen:8VoCX6UhInGoJpOs@bigdata.4bgpg.mongodb.net/"
+        connection_string = st.secrets["mongodb"]["connection_string"]
+        db_name = st.secrets["mongodb"]["database_name"]
         client = MongoClient(connection_string)
-        db = client['StreamingPlatform']
+        db = client[db_name]
         movies_collection = db['Movies']
         movie = movies_collection.find_one({"_id": movie_id})
         if movie:
@@ -51,9 +52,10 @@ def display_movie_details():
 
 
 def load_homepage():
-    connection_string = "mongodb+srv://aimeechen:8VoCX6UhInGoJpOs@bigdata.4bgpg.mongodb.net/"
+    connection_string = st.secrets["mongodb"]["connection_string"]
+    db_name = st.secrets["mongodb"]["database_name"]
     client = MongoClient(connection_string)
-    db = client['StreamingPlatform']
+    db = client[db_name]
     movies_collection = db['Movies']
 
     movies = list(movies_collection.find({}, {"_id": 1, "title": 1, "release_year": 1, "genre": 1}).limit(20))  # Limit to 20 movies for demo

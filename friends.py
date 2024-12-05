@@ -4,9 +4,10 @@ from pymongo import MongoClient
 def load_friend_page():
     st.title("Your Friends on Netflix")
     
-    connection_string = "mongodb+srv://aimeechen:8VoCX6UhInGoJpOs@bigdata.4bgpg.mongodb.net/"
+    connection_string = st.secrets["mongodb"]["connection_string"]
+    db_name = st.secrets["mongodb"]["database_name"]
     client = MongoClient(connection_string)
-    db = client['StreamingPlatform']
+    db = client[db_name]
     friends_collection = db['Friends']
 
     # assume demo user ID is 1
