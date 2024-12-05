@@ -120,6 +120,8 @@ def watch_together_page():
                         ))
                         conn.commit()
                     st.rerun()
+                    if st.button("Back to Movie Selection"):
+                        st.session_state["selected_movie"] = None
                 except Exception as e:
                     st.error(f"An error occurred while sending the message: {e}")
         if st.button("Back to Movie Selection"):
