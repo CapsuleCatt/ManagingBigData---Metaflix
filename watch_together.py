@@ -119,9 +119,9 @@ def watch_together_page():
                             unique_id, prompt, "You", "-1:00", room_id, timestamp, user_id
                         ))
                         conn.commit()
-                    st.rerun()
                     if st.button("Back to Movie Selection"):
                         st.session_state["selected_movie"] = None
+                    st.rerun()
                 except Exception as e:
                     st.error(f"An error occurred while sending the message: {e}")
         if st.button("Back to Movie Selection"):
