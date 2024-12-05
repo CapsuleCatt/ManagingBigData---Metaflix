@@ -32,8 +32,7 @@ def watch_together_page():
         if movie:
             movie_selected = f"{movie['title']} ({movie['release_year']})"
         st.title("Watch Together with Friends")
-        
-        # RDS Configuration
+        # rds
         db_host = "netflix-database.cps2kq4uy10a.us-east-1.rds.amazonaws.com"
         db_user = "admin"
         db_password = "netflix-database"
@@ -49,11 +48,10 @@ def watch_together_page():
         # friends
         friends_collection = db['Friends']
 
-        # Assume Room ID (Show ID) and Demo User ID
+        # assume user_id is 1 for demo
         room_id = movie_id
         user_id = 1
 
-        # Fetch the current user's friends
         def fetch_friends():
             user_friends = friends_collection.find_one({"UserID": user_id})
             return user_friends.get("Friends", []) if user_friends else []
@@ -62,7 +60,7 @@ def watch_together_page():
 
         st.session_state.chat_history = []
 
-        # Fetch chat messages from RDS and store in session_state
+        # fetch chat messages (dummy data for demo)
         def fetch_chat_messages():
             # if not friends_list:
             #     return []
@@ -92,29 +90,22 @@ def watch_together_page():
             ]
             
 
-        # Call the fetch function to populate session_state initially
         if not st.session_state.chat_history:
             fetch_chat_messages()
 
-        # Layout: Video on the left, Chat on the right
         col1, col2 = st.columns([2, 1])
 
         with col1:
-            # Video Section
             st.subheader(movie_selected)
             st.video("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
 
         with col2:
-            # Chat Section
             st.subheader("Live Chat")
             messages = st.container(height=400)
-            # Display chat messages from session_state
             with messages:
                 for chat in st.session_state.chat_history:
                     st.write(f"[{chat['timestamp']}] **{chat['author']}**: {chat['message']}")
-            # Use `st.chat_input` for input handling
             if prompt := st.chat_input("Say something"):
-                # Append the new message to session_state
                 timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 st.session_state.chat_history.append({
                     "author": "You",
@@ -126,7 +117,7 @@ def watch_together_page():
                         # display only the latest message
                         if chat == st.session_state.chat_history[-1]:
                             st.write(f"[{chat['timestamp']}] **{chat['author']}**: {chat['message']}")
-                # # Backend operation to store the message in RDS
+                # # backend operation to store the message in RDS
                 
                 # unique_id = str(uuid.uuid4())[:8]
                 # insert_query = """
