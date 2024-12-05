@@ -33,17 +33,17 @@ def watch_together_page():
             movie_selected = f"{movie['title']} ({movie['release_year']})"
         st.title("Watch Together with Friends")
         # rds
-        db_host = "netflix-database.cps2kq4uy10a.us-east-1.rds.amazonaws.com"
-        db_user = "admin"
-        db_password = "netflix-database"
-        db_name = "Netflix"
+        # db_host = "netflix-database.cps2kq4uy10a.us-east-1.rds.amazonaws.com"
+        # db_user = "admin"
+        # db_password = "netflix-database"
+        # db_name = "Netflix"
 
-        conn = pymysql.connect(
-            host=db_host,
-            user=db_user,
-            password=db_password,
-            database=db_name
-        )
+        # conn = pymysql.connect(
+        #     host=db_host,
+        #     user=db_user,
+        #     password=db_password,
+        #     database=db_name
+        # )
 
         # friends
         friends_collection = db['Friends']
