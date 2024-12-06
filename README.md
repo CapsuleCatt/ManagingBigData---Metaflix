@@ -49,7 +49,8 @@ The application demo is built with **Streamlit**. The application includes featu
 #### 2. Download `CreateNetflixDB.sql` and data files (`Netflix Userbase.csv`,`All_Profiles.csv`, `All_Devices.csv`, `All_SearchHistory.csv`, `All_ViewingActivity.csv`, `chat_data.csv`)
 #### 3. Change data file paths in SQL script
 #### 4. Run `CreateNetflixDB.sql` script to create the database and populate tables
-B. **Setup MongoDB**:
+---
+### B. **Setup MongoDB**:
 #### 1. Create a MongoDB Atlas account and set up a cluster
 #### 2. Download `nosql.ipynb` and data files (`netflix_titles.csv`, `Clickstream_Data_with_User_IDs.csv`, `Friends_Data_MongoDB.json`)
 #### 3. Change data file paths in the Jupyter notebook
@@ -130,11 +131,7 @@ python3 load_hbase.py
 ```
 ---
 ### D. **Setup the Streamlit app**:
-#### 1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-repo/netflix-app.git
-   cd netflix-app
-   ```
+#### 1. Download all files from the `demo` folder
 #### 2. Install dependencies:
    ```bash
    pip install -r requirements.txt
@@ -143,13 +140,13 @@ python3 load_hbase.py
    ```toml
    [mongodb]
    connection_string = "your_mongodb_connection_string"
-   database_name = "netflix_db"
+   database_name = "StreamingPlatform"
 
    [rds]
    db_host = "your-rds-endpoint.amazonaws.com"
-   db_user = "your_database_name"
-   db_password = "your_username"
-   db_name = "your_password"
+   db_user = "your_username"
+   db_password = "your_password"
+   db_name = "Netflix"
    ```
 
 #### 4. Run the app:
@@ -159,10 +156,10 @@ python3 load_hbase.py
 
 ## Streamlit App File Structure
 ```
-netflix-app/
+demo/
 │
 ├── __init__.py           # Main entry point of the app
-├── .streamlit/           # Streamlit configuration (Ignored in Git)
+├── .streamlit/           # Streamlit configuration folder
 │   └── secrets.toml      # Credentials for MongoDB and RDS 
 ├── login_config.py       # Login configuration
 ├── home.py               # Logic for the Homepage
@@ -170,7 +167,6 @@ netflix-app/
 ├── watch_together.py     # Logic for the Watch Together feature
 ├── accounts.py            # Logic for the Account Management
 ├── requirements.txt      # Dependencies
-├── README.md             # Project documentation
 └── moviecover.jpg        # Sample movie cover image
 ```
 
