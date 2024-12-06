@@ -130,7 +130,11 @@ Run the script to load the data:
 python3 load_hbase.py
 ```
 ---
-### D. **Setup the Streamlit app**:
+### D. **Setup Data Warehouse**:
+#### 1. Download file `star_schema.sql`
+#### 2. Run the SQL script in MySQL workbench in the corresponding database to create the star schema
+---
+### E. **Setup the Streamlit app**:
 #### 1. Download all files from the `demo` folder
 #### 2. Install dependencies:
    ```bash
