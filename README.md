@@ -28,26 +28,118 @@ The application demo is built with **Streamlit**. The application includes featu
 
 ## Installation
 ### Prerequisites
-1. Python 3.7+
-2. MongoDB database (Atlas or local setup)
-3. AWS RDS for additional data storage
-4. Install required Python libraries:
+#### 1. Python 3.7+
+#### 2. MongoDB database (Atlas or local setup)
+#### 3. AWS RDS for additional data storage
+#### 4. HBase on an EMR cluster
+#### 5. S3 bucket for storing data files (`chat_data.csv`)
+#### 6. Python 3.7+ installed on the EMR cluster
+#### 7. AWS CLI installed on the EMR cluster
+#### 8. MySQL Workbench for RDS setup
+#### 9. Jupyter notebook for MongoDB setup
+#### 10. Install required Python libraries:
    ```bash
    pip install -r requirements.txt
    ```
 
-### Steps
+## Steps
 
-1. Clone the repository:
+### A. **Setup RDS**:
+#### 1. Connect to your RDS instance in MySQL Workbench
+#### 2. Download `CreateNetflixDB.sql` and data files (`Netflix Userbase.csv`,`All_Profiles.csv`, `All_Devices.csv`, `All_SearchHistory.csv`, `All_ViewingActivity.csv`, `chat_data.csv`)
+#### 3. Change data file paths in SQL script
+#### 4. Run `CreateNetflixDB.sql` script to create the database and populate tables
+B. **Setup MongoDB**:
+#### 1. Create a MongoDB Atlas account and set up a cluster
+#### 2. Download `nosql.ipynb` and data files (`netflix_titles.csv`, `Clickstream_Data_with_User_IDs.csv`, `Friends_Data_MongoDB.json`)
+#### 3. Change data file paths in the Jupyter notebook
+#### 4. Change the MongoDB connection string in the Jupyter notebook
+#### 5. Run the Jupyter notebook to populate the MongoDB database
+---
+### C. **Setup HBase**:
+### Steps to Set Up and Load Data
+
+#### 1. Create the HBase Table
+Run the following HBase shell commands to create the table:
+
+```shell
+create 'chat_data', 'message_details', 'user_details', 'show_details'
+```
+
+#### 2. Verify Table Structure
+Ensure the table structure is correct by running:
+
+```shell
+describe 'chat_data'
+```
+
+#### 3. Download CSV Data
+Download the `chat_data.csv` file from the S3 bucket (replace `netflixx` with your bucket name):
+
+```shell
+sudo aws s3 cp s3://netflixx/data/chat_data.csv /user/hadoop/chat_data.csv
+```
+
+#### 4. Install Python Development Tools
+Install the necessary Python development tools on your system:
+
+```shell
+sudo yum install python3-devel
+```
+
+#### 5. Install Required Python Libraries
+Install the Python libraries required for connecting to HBase:
+
+```shell
+pip install thriftpy2 happybase
+```
+
+#### 6. Run Python Script to Load Data
+Create a Python script named `load_hbase.py` with the following content:
+
+```python
+import csv
+import happybase
+
+# Connect to HBase
+connection = happybase.Connection('localhost')
+table = connection.table('chat_data')
+
+# Read CSV and insert data into HBase
+with open('/user/hadoop/chat_data.csv', 'r') as csvfile:
+    reader = csv.DictReader(csvfile)
+    for row in reader:
+        unique_id = row['unique_id']
+        data = {
+            'show_details:show_id': row['show_id'],
+            'user_details:User_ID': row['User ID'],
+            'user_details:all_authors': row['all_authors'],
+            'message_details:messages': row['messages'],
+            'message_details:timestamps': row['timestamps'],
+            'message_details:time': row['time'],
+        }
+        table.put(unique_id, data)
+
+print("Data successfully loaded into HBase!")
+```
+
+Run the script to load the data:
+
+```shell
+python3 load_hbase.py
+```
+---
+### D. **Setup the Streamlit app**:
+#### 1. Clone the repository:
    ```bash
    git clone https://github.com/your-repo/netflix-app.git
    cd netflix-app
    ```
-2. Install dependencies:
+#### 2. Install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
-3. Set up your MongoDB or RDS credentials in `secrets.toml`:
+#### 3. Set up your MongoDB or RDS credentials in `secrets.toml`:
    ```toml
    [mongodb]
    connection_string = "your_mongodb_connection_string"
@@ -60,12 +152,12 @@ The application demo is built with **Streamlit**. The application includes featu
    db_name = "your_password"
    ```
 
-4. Run the app:
+#### 4. Run the app:
    ```bash
    streamlit run __init__.py
    ```
 
-## File Structure
+## Streamlit App File Structure
 ```
 netflix-app/
 │
@@ -82,7 +174,7 @@ netflix-app/
 └── moviecover.jpg        # Sample movie cover image
 ```
 
-## Deployment
+## Streamlit App Deployment
 1. Push the code to your Git repository.
 2. Set up your app on **Streamlit Cloud**.
-3. Add secrets in Streamlit's **Secrets Manager** under the "Advanced settings" section.
+3. Add secrets (`secrets.toml`) in Streamlit's **Secrets Manager** under the "Advanced settings" section.
