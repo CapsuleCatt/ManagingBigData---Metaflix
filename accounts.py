@@ -9,34 +9,44 @@ def change_date(str):
 def load_account_page():
     st.title("Your Account Information")
     # rds
-    db_host = st.secrets["rds"]["db_host"]
-    db_user = st.secrets["rds"]["db_user"]
-    db_password = st.secrets["rds"]["db_password"]
-    db_name = st.secrets["rds"]["db_name"]
+    # db_host = st.secrets["rds"]["db_host"]
+    # db_user = st.secrets["rds"]["db_user"]
+    # db_password = st.secrets["rds"]["db_password"]
+    # db_name = st.secrets["rds"]["db_name"]
 
-    conn = pymysql.connect(
-        host=db_host,
-        user=db_user,
-        password=db_password,
-        database=db_name
-    )
+    # conn = pymysql.connect(
+    #     host=db_host,
+    #     user=db_user,
+    #     password=db_password,
+    #     database=db_name
+    # )
     # assume demo user ID is 1
     user_id = 1
 
-    def fetch_user_data():
-        query = "SELECT * FROM netflix_userbase WHERE `user_id` = %s"
-        with conn.cursor() as cursor:
-            cursor.execute(query, (user_id,))
-            result = cursor.fetchone()
-            if result:
-                columns = [col[0] for col in cursor.description]
-                return dict(zip(columns, result))
-            return None
+    # def fetch_user_data():
+    #     query = "SELECT * FROM netflix_userbase WHERE `user_id` = %s"
+    #     with conn.cursor() as cursor:
+    #         cursor.execute(query, (user_id,))
+    #         result = cursor.fetchone()
+    #         if result:
+    #             columns = [col[0] for col in cursor.description]
+    #             return dict(zip(columns, result))
+    #         return None
 
-    user_data = fetch_user_data()
+    # user_data = fetch_user_data()
+    user_data = {'user_id': 1,
+                'subscription_type': 'Basic',
+                'monthly_revenue': 10,
+                'join_date': 'Jan 15, 2022',
+                'last_payment_date': 'Jun 10, 2023',
+                'country': 'United States',
+                'age': 28,
+                'gender': 'Male',
+                'device': 'Smartphone',
+                'plan_duration': '1 Month\r'}
     # change date format
-    user_data['join_date'] = change_date(user_data['join_date'])
-    user_data['last_payment_date'] = change_date(user_data['last_payment_date'])
+    # user_data['join_date'] = change_date(user_data['join_date'])
+    # user_data['last_payment_date'] = change_date(user_data['last_payment_date'])
     if user_data:
         with st.container():
             st.markdown(

@@ -37,6 +37,7 @@ The application demo is built with **Streamlit**. The application includes featu
    ```
 
 ### Steps
+
 1. Clone the repository:
    ```bash
    git clone https://github.com/your-repo/netflix-app.git
